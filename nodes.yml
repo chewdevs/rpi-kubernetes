@@ -1,0 +1,5 @@
+- hosts: nodes
+  user: pirate
+  become: yes
+  roles:
+    - common

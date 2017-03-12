@@ -1,0 +1,6 @@
+- name: install kubeadm
+  apt:
+    name: kubeadm
+    state: present
+    update_cache: yes
+  tags: common,kubernetes
