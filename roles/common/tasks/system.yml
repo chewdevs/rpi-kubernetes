@@ -1,0 +1,17 @@
+- name: set hostname
+  hostname:
+    name: "{{ inventory_hostname }}"
+  tags: common,system,hostname
+
+- name: upgrade all packages
+  apt:
+    upgrade: dist
+    update_cache: yes
+  tags: common,system,apt
+
+- name: install useful packages
+  apt:
+    name:
+      - vim
+    update_cache: yes
+  tags: common,system,apt

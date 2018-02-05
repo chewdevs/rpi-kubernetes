@@ -1,2 +1,2 @@
-- include: repo-kubernetes.yml
-- include: kubernetes.yml
+- import_tasks: system.yml
+- import_tasks: kubernetes.yml

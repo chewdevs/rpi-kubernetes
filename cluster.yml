@@ -1,0 +1,11 @@
+- hosts: master
+  user: pirate
+  become: yes
+  roles:
+    - common
+
+- hosts: nodes
+  user: pirate
+  become: yes
+  roles:
+    - common
