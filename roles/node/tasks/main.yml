@@ -1,0 +1,10 @@
+- name: Check if join is already done
+  stat:
+    path: "/etc/kubernetes/kubelet.conf"
+  register: kubelet_conf
+  tags: node,join
+
+- name: Join node to master
+  shell: "{{ hostvars[groups['master'][0]]['join_command']['stdout'] }}"
+  when: not kubelet_conf.stat.exists
+  tags: node,join

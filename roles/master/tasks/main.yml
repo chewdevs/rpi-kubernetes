@@ -1,0 +1,39 @@
+- name: Check if init is already done
+  stat:
+    path: "/etc/kubernetes/kubelet.conf"
+  register: kubelet_conf
+  tags: master,init
+
+- name: Init the master with kubeadm
+  command: kubeadm init --pod-network-cidr 10.244.0.0/16
+  when: not kubelet_conf.stat.exists
+  tags: master,init
+
+- name: create .kube directory
+  file:
+    path: "/home/{{ ansible_user }}/.kube"
+    state: directory
+  tags: master,kubectl
+
+- name: copy admin.conf to .kube directory
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "/home/{{ ansible_user }}/.kube/config"
+    remote_src: yes
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  tags: master,kubectl
+
+- name: init flannel pods
+  shell: curl -sSL https://rawgit.com/coreos/flannel/master/Documentation/kube-flannel.yml | sed "s/amd64/arm/g" | kubectl create -f -
+  tags: master,flannel
+
+- name: generate token
+  # shell: kubeadm token list |tail -1 |awk  '{print $1}'
+  shell: kubeadm token create --ttl 5m --print-join-command
+  register: join_command
+  tags: master,token,join
+
+# - debug:
+#     var: init_token.stdout
+#   tags: test

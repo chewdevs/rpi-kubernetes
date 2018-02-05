@@ -3,9 +3,11 @@
   become: yes
   roles:
     - common
+    - master
 
 - hosts: nodes
   user: pirate
   become: yes
   roles:
     - common
+    - node
