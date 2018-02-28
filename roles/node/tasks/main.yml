@@ -1,3 +1,10 @@
+- name: install glusterfs client
+  apt:
+    name: glusterfs-client
+    state: present
+    update_cache: yes
+  tags: node,glusterfs-client
+
 - name: Check if join is already done
   stat:
     path: "/etc/kubernetes/kubelet.conf"
