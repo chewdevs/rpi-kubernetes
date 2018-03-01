@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sickrage
+  labels:
+    app: sickrage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sickrage
+  template:
+    metadata:
+      labels:
+        app: sickrage
+    spec:
+      containers:
+      - name: sickrage
+        image: lsioarmhf/sickrage
+        ports:
+        - containerPort: 8081
+      volumes:
+      - name: config
