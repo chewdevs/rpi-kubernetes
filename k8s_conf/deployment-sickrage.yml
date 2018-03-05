@@ -19,5 +19,32 @@ spec:
         image: lsioarmhf/sickrage
         ports:
         - containerPort: 8081
+        volumeMounts:
+        - mountPath: /config
+          name: sickrage-config
+        volumeMounts:
+        - mountPath: /tv
+          name: tv
+        env:
+          - name: PGID
+            value: "1000"
+          - name: PUID
+            value: "1000"
       volumes:
-      - name: config
+      - name: sickrage-config
+        persistentVolumeClaim:
+          claimName: sickrage-config
+      - name: tv
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+    name: sickrage-config
+    annotations:
+        volume.beta.kubernetes.io/storage-class: slow
+spec:
+    accessModes:
+        - ReadWriteMany
+    resources:
+        requests:
+            storage: 10Mi
