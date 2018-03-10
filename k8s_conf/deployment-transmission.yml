@@ -19,3 +19,10 @@ spec:
         image: lsioarmhf/transmission
         ports:
         - containerPort: 9091
+        volumeMounts:
+        - mountPath: /downloads
+          name: downloads
+      volumes:
+      - name: downloads
+        persistentVolumeClaim:
+          claimName: downloads
