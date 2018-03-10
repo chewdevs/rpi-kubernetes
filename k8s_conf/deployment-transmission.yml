@@ -20,9 +20,27 @@ spec:
         ports:
         - containerPort: 9091
         volumeMounts:
+        - mountPath: /config
+          name: transmission-config
         - mountPath: /downloads
           name: downloads
       volumes:
       - name: downloads
         persistentVolumeClaim:
           claimName: downloads
+      - name: transmission-config
+        persistentVolumeClaim:
+          claimName: transmission-config
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+    name: transmission-config
+    annotations:
+        volume.beta.kubernetes.io/storage-class: slow
+spec:
+    accessModes:
+        - ReadWriteMany
+    resources:
+        requests:
+            storage: 10Mi
