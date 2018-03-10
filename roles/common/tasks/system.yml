@@ -13,5 +13,6 @@
   apt:
     name:
       - vim
+      - nfs-common
     update_cache: yes
   tags: common,system,apt
