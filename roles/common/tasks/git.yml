@@ -1,0 +1,11 @@
+- name: create git directory
+  file:
+    path: /src
+    state: directory
+  tags: git
+
+- name: clone git repo
+  git:
+    repo: https://github.com/chewdevs/rpi-kubernetes.git
+    dest: /src/rpi-kubernetes
+  tags: git
