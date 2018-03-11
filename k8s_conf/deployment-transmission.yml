@@ -24,6 +24,11 @@ spec:
           name: transmission-config
         - mountPath: /downloads
           name: downloads
+        env:
+          - name: PGID
+            value: "1000"
+          - name: PUID
+            value: "1000"
       initContainers:
       - name: init-transmission
         image: busybox
