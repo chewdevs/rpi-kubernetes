@@ -1,54 +1,65 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: radarr
+spec:
+  selector:
+    app: radarr
+  ports:
+  - protocol: TCP
+    port: 7878
+  type: NodePort
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sickrage
+  name: radarr
   labels:
-    app: sickrage
+    app: radarr
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sickrage
+      app: radarr
   template:
     metadata:
       labels:
-        app: sickrage
+        app: radarr
     spec:
       containers:
-      - name: sickrage
-        image: lsioarmhf/sickrage
+      - name: transmission
+        image: lsioarmhf/radarr
         ports:
-        - containerPort: 8081
+        - containerPort: 7878
         volumeMounts:
         - mountPath: /config
-          name: sickrage-config
-        - mountPath: /tv
-          name: nfs-series
+          name: radarr-config
         - mountPath: /downloads
           name: downloads
+        - mountPath: /movies
+          name: nfs-movies
         env:
           - name: PGID
             value: "1000"
           - name: PUID
             value: "1000"
       volumes:
-      - name: sickrage-config
+      - name: radarr-config
         persistentVolumeClaim:
-          claimName: sickrage-config
+          claimName: radarr-config
       - name: downloads
         persistentVolumeClaim:
           claimName: downloads
-      - name: nfs-series
+      - name: nfs-movies
         persistentVolumeClaim:
-          claimName: nfs-series
-
+          claimName: nfs-movies
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: sickrage-config
-  annotations:
-    volume.beta.kubernetes.io/storage-class: slow
+    name: radarr-config
+    annotations:
+        volume.beta.kubernetes.io/storage-class: slow
 spec:
   accessModes:
     - ReadWriteMany
@@ -59,7 +70,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: nfs-series
+  name: nfs-movies
 spec:
   capacity:
     storage: 10Mi
@@ -67,12 +78,12 @@ spec:
     - ReadWriteMany
   nfs:
     server: 192.168.1.20
-    path: "/volume1/Series"
+    path: "/volume1/Movies"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: nfs-series
+  name: nfs-movies
 spec:
   accessModes:
     - ReadWriteMany

@@ -1,54 +1,65 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: couchpotato
+spec:
+  selector:
+    app: couchpotato
+  ports:
+  - protocol: TCP
+    port: 5050
+  type: NodePort
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sickrage
+  name: couchpotato
   labels:
-    app: sickrage
+    app: couchpotato
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sickrage
+      app: couchpotato
   template:
     metadata:
       labels:
-        app: sickrage
+        app: couchpotato
     spec:
       containers:
-      - name: sickrage
-        image: lsioarmhf/sickrage
+      - name: transmission
+        image: lsioarmhf/couchpotato
         ports:
-        - containerPort: 8081
+        - containerPort: 5050
         volumeMounts:
         - mountPath: /config
-          name: sickrage-config
-        - mountPath: /tv
-          name: nfs-series
+          name: couchpotato-config
         - mountPath: /downloads
           name: downloads
+        - mountPath: /movies
+          name: nfs-movies
         env:
           - name: PGID
             value: "1000"
           - name: PUID
             value: "1000"
       volumes:
-      - name: sickrage-config
+      - name: couchpotato-config
         persistentVolumeClaim:
-          claimName: sickrage-config
+          claimName: couchpotato-config
       - name: downloads
         persistentVolumeClaim:
           claimName: downloads
-      - name: nfs-series
+      - name: nfs-movies
         persistentVolumeClaim:
-          claimName: nfs-series
-
+          claimName: nfs-movies
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: sickrage-config
-  annotations:
-    volume.beta.kubernetes.io/storage-class: slow
+    name: couchpotato-config
+    annotations:
+        volume.beta.kubernetes.io/storage-class: slow
 spec:
   accessModes:
     - ReadWriteMany
@@ -59,7 +70,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: nfs-series
+  name: nfs-movies
 spec:
   capacity:
     storage: 10Mi
@@ -67,12 +78,12 @@ spec:
     - ReadWriteMany
   nfs:
     server: 192.168.1.20
-    path: "/volume1/Series"
+    path: "/volume1/Movies"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: nfs-series
+  name: nfs-movies
 spec:
   accessModes:
     - ReadWriteMany
