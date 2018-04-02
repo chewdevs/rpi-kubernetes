@@ -1,3 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: sickrage
+spec:
+  selector:
+    app: sickrage
+  ports:
+  - protocol: TCP
+    port: 8081
+  type: NodePort
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,7 +28,19 @@ spec:
     spec:
       containers:
       - name: sickrage
-        image: lsioarmhf/sickrage
+        image: lsioarmhf/sickrage:latest
+        livenessProbe:
+          httpGet:
+            path: /home
+            port: 8081
+          initialDelaySeconds: 180
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /home
+            port: 8081
+          initialDelaySeconds: 180
+          periodSeconds: 30
         ports:
         - containerPort: 8081
         volumeMounts:

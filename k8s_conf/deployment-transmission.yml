@@ -1,3 +1,16 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: transmission
+spec:
+  selector:
+    app: transmission
+  ports:
+  - protocol: TCP
+    port: 9091
+    targetPort: 9091
+  type: NodePort
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
