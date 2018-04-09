@@ -29,18 +29,18 @@ spec:
       containers:
       - name: sickrage
         image: lsioarmhf/sickrage:latest
-        livenessProbe:
-          httpGet:
-            path: /home
-            port: 8081
-          initialDelaySeconds: 180
-          periodSeconds: 30
-        readinessProbe:
-          httpGet:
-            path: /home
-            port: 8081
-          initialDelaySeconds: 180
-          periodSeconds: 30
+        # livenessProbe:
+        #   httpGet:
+        #     path: /home
+        #     port: 8081
+        #   initialDelaySeconds: 180
+        #   periodSeconds: 30
+        # readinessProbe:
+        #   httpGet:
+        #     path: /home
+        #     port: 8081
+        #   initialDelaySeconds: 180
+        #   periodSeconds: 30
         ports:
         - containerPort: 8081
         volumeMounts:
