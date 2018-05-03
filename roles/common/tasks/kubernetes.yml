@@ -13,9 +13,17 @@
 - name: install kube tools
   apt:
     name:
-      - kubeadm
-      - kubelet
-      - kubectl
+      - kubeadm={{ k8s_version }}
+      - kubelet={{ k8s_version }}
+      - kubectl={{ k8s_version }}
     state: present
     update_cache: yes
+  tags: common,kubeadm
+
+- name: Mark k8s packages as hold
+  command: apt-mark hold {{ item }}
+  with_items:
+    - kubeadm
+    - kubectl
+    - kubelet
   tags: common,kubeadm
