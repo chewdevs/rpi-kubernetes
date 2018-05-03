@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
       - name: transmission
-        image: lsioarmhf/jackett
+        image: lsioarmhf/jackett:latest
         ports:
         - containerPort: 9117
         volumeMounts:
