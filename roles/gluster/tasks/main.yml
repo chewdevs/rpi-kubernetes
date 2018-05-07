@@ -1,0 +1,26 @@
+- name: load modules for gluster
+  modprobe:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - dm_mirror
+    - dm_snapshot
+    - dm_thin_pool
+  tags: gluster,module
+
+- name: create gluster directory
+  file:
+    path: "{{ fake_disk_dir }}"
+    state: directory
+  tags: gluster,fake_disk
+
+- name: Check if fake disk is already created
+  stat:
+    path: "{{ fake_disk_dir }}/disk"
+  register: fake_disk
+  tags: gluster,fake_disk
+
+- name: create fake disk
+  command: dd if=/dev/zero of={{ fake_disk_dir }}/disk bs=1M count={{ fake_disk_size *1024 }}
+  when: not fake_disk.stat.exists
+  tags: gluster,fake_disk
