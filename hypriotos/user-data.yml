@@ -1,0 +1,26 @@
+#cloud-config
+## vim: syntax=yaml
+##
+#
+hostname: slave3
+manage_etc_hosts: true
+
+resize_rootfs: false
+growpart:
+    mode: off
+    devices: ["/"]
+    ignore_growroot_disabled: false
+
+
+users:
+  - name: pirate
+    gecos: "Hypriot Pirate"
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    groups: users,docker,video
+    plain_text_passwd: hypriot
+    lock_passwd: false
+    ssh_pwauth: false
+    chpasswd: { expire: false }
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHKMdSP2cwM2EmRmqBQtyo8ZP7LwtQ4HjMDCh1p9b6HDLfsL5mW16UzclhexUiTnI++SISmlsTpvlWrz9c3zIJaXu2yT1ADnsctAoYZV1/j/K1JcwE9qGcYdi0mAfETXc7k/p1fBCP/LQwrkP0BUE4+Tu1g+3ZkY3WCZra77f5ucAUI+zvvyCGs96PTyNdKPVHDqOrUxxfNNQS7b9HXWNrmne3gRxGa/cXp9hvsNl/BLg+mC8f2vAZX7z7ebde7lAv7TaUjobaH33Mzo6I8l1uHHAaBs8C1+3kaP7kZvgLSFLC9pCtGGtsjHF/JDSBK2mkM1C8ZVIrpFOAJq44vQP5 laurent@undercity-ubuntu

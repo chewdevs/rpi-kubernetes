@@ -8,19 +8,74 @@
     - dm_thin_pool
   tags: gluster,module
 
+
+#
+# - name: Check if fake disk is already created
+#   stat:
+#     path: "{{ fake_disk_dir }}/disk"
+#   register: fake_disk
+#   tags: gluster,fake_disk
+#
+# - name: create fake disk
+#   command: dd if=/dev/zero of={{ fake_disk_dir }}/disk bs=1M count={{ fake_disk_size *1024 }}
+#   when: not fake_disk.stat.exists
+#   tags: gluster,fake_disk
+
+- name: shrink root partition
+  shell: |
+    cat <<EOF | sudo parted ---pretend-input-tty /dev/{{ disk_device }}
+    resizepart 2 {{ root_part_size }}
+    yes
+    EOF
+  args:
+    executable: /bin/bash
+  tags: gluster,disk
+
+- name: resize root filesystem
+  filesystem:
+    dev: /dev/{{ disk_device }}p2
+    fstype: ext4
+    resizefs: yes
+  tags: gluster,disk
+
+- name: create gluster partition
+  parted:
+    device: /dev/{{ disk_device }}
+    number: 3
+    part_start: "{{ root_part_size }}"
+    state: present
+  tags: gluster,disk
+
+- name: create gluster filesystem
+  filesystem:
+    dev: /dev/{{ disk_device }}p3
+    fstype: "{{ gluster_disk_fs }}"
+    resizefs: yes
+  tags: gluster,disk
+
 - name: create gluster directory
   file:
-    path: "{{ fake_disk_dir }}"
+    path: "{{ gluster_dir }}"
     state: directory
-  tags: gluster,fake_disk
+  tags: gluster,disk
 
-- name: Check if fake disk is already created
-  stat:
-    path: "{{ fake_disk_dir }}/disk"
-  register: fake_disk
-  tags: gluster,fake_disk
+- name: mount gluster partition
+  mount:
+    path: "{{ gluster_dir }}"
+    src: /dev/{{ disk_device }}p3
+    fstype: "{{ gluster_disk_fs }}"
+    state: mounted
+  tags: gluster,disk
 
-- name: create fake disk
-  command: dd if=/dev/zero of={{ fake_disk_dir }}/disk bs=1M count={{ fake_disk_size *1024 }}
-  when: not fake_disk.stat.exists
-  tags: gluster,fake_disk
+- name: install glusterfs server
+  apt:
+    name: glusterfs-server
+    update_cache: yes
+    state: present
+  tags: gluster
+
+- name: probe peer
+  shell: gluster peer probe {{ item }}
+  with_items: "{{ groups['nodes'] }}"
+  run_once: yes
+  tags: gluster,probe

@@ -1,2 +1,8 @@
 fake_disk_dir: /fake_disk
 fake_disk_size: 20
+
+disk_device: mmcblk0
+root_part_size: 10GB
+
+gluster_disk_fs: ext4
+gluster_dir: /gluster
