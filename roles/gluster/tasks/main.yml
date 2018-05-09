@@ -46,12 +46,12 @@
     state: present
   tags: gluster,disk
 
-- name: create gluster filesystem
-  filesystem:
-    dev: /dev/{{ disk_device }}p3
-    fstype: "{{ gluster_disk_fs }}"
-    resizefs: yes
-  tags: gluster,disk
+# - name: create gluster filesystem
+  # filesystem:
+  #   dev: /dev/{{ disk_device }}p3
+  #   fstype: "{{ gluster_disk_fs }}"
+  #   resizefs: yes
+  # tags: gluster,disk
 
 - name: create gluster directory
   file:
@@ -64,7 +64,7 @@
     path: "{{ gluster_dir }}"
     src: /dev/{{ disk_device }}p3
     fstype: "{{ gluster_disk_fs }}"
-    state: mounted
+    state: absent
   tags: gluster,disk
 
 - name: install glusterfs server
