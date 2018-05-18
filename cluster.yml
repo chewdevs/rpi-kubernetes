@@ -9,6 +9,6 @@
   user: pirate
   become: yes
   roles:
+    - gluster
     - common
     - node
-    - gluster

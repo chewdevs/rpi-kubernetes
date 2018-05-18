@@ -8,6 +8,15 @@
     - dm_thin_pool
   tags: gluster,module
 
+- name: load module at startup
+  blockinfile:
+    path: /etc/modules
+    block: |
+      dm_mirror
+      dm_snapshot
+      dm_thin_pool
+  tags: gluster,module
+
 
 #
 # - name: Check if fake disk is already created
@@ -21,7 +30,7 @@
 #   when: not fake_disk.stat.exists
 #   tags: gluster,fake_disk
 
-- name: shrink root partition
+- name: extend root partition
   shell: |
     cat <<EOF | sudo parted ---pretend-input-tty /dev/{{ disk_device }}
     resizepart 2 {{ root_part_size }}
@@ -53,29 +62,29 @@
   #   resizefs: yes
   # tags: gluster,disk
 
-- name: create gluster directory
-  file:
-    path: "{{ gluster_dir }}"
-    state: directory
-  tags: gluster,disk
+# - name: create gluster directory
+#   file:
+#     path: "{{ gluster_dir }}"
+#     state: directory
+#   tags: gluster,disk
 
-- name: mount gluster partition
-  mount:
-    path: "{{ gluster_dir }}"
-    src: /dev/{{ disk_device }}p3
-    fstype: "{{ gluster_disk_fs }}"
-    state: absent
-  tags: gluster,disk
-
-- name: install glusterfs server
-  apt:
-    name: glusterfs-server
-    update_cache: yes
-    state: present
-  tags: gluster
-
-- name: probe peer
-  shell: gluster peer probe {{ item }}
-  with_items: "{{ groups['nodes'] }}"
-  run_once: yes
-  tags: gluster,probe
+# - name: mount gluster partition
+#   mount:
+#     path: "{{ gluster_dir }}"
+#     src: /dev/{{ disk_device }}p3
+#     fstype: "{{ gluster_disk_fs }}"
+#     state: absent
+#   tags: gluster,disk
+#
+# - name: install glusterfs server
+#   apt:
+#     name: glusterfs-server
+#     update_cache: yes
+#     state: present
+#   tags: gluster
+#
+# - name: probe peer
+#   shell: gluster peer probe {{ item }}
+#   with_items: "{{ groups['nodes'] }}"
+#   run_once: yes
+#   tags: gluster,probe
