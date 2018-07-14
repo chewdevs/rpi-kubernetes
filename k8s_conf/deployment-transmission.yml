@@ -68,10 +68,23 @@ apiVersion: v1
 metadata:
     name: transmission-config
     annotations:
-        volume.beta.kubernetes.io/storage-class: slow
+        volume.beta.kubernetes.io/storage-class: glusterfs-storage
 spec:
     accessModes:
         - ReadWriteMany
     resources:
         requests:
             storage: 10Mi
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: downloads
+  annotations:
+      volume.beta.kubernetes.io/storage-class: glusterfs-storage
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 20Gi
