@@ -3,7 +3,7 @@
     name: glusterfs-client
     state: present
     update_cache: yes
-  tags: node,glusterfs-client
+  tags: node,gluster-client
 
 - name: Check if join is already done
   stat:

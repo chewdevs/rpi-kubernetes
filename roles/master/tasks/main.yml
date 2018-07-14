@@ -24,6 +24,13 @@
     group: "{{ ansible_user }}"
   tags: master,kubectl
 
+- name: copy admin.conf to ansible controller
+  fetch:
+    src: /etc/kubernetes/admin.conf
+    dest: ~/.kube/config
+    flat: yes
+  tags: master,kubectl
+
 - name: init flannel pods
   shell: curl -sSL https://rawgit.com/coreos/flannel/master/Documentation/kube-flannel.yml | sed "s/amd64/arm/g" | kubectl apply -f -
   become: false
