@@ -10,6 +10,22 @@ spec:
     port: 8081
   type: NodePort
 ---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: sickrage
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - host: sickrage.local
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: sickrage
+          servicePort: 8081
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:

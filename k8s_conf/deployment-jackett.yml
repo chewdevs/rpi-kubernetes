@@ -10,6 +10,22 @@ spec:
     port: 9117
   type: NodePort
 ---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: jackett
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - host: jackett.local
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: jackett
+          servicePort: 9117
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
