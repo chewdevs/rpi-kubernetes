@@ -53,20 +53,13 @@ spec:
           name: transmission-config
         - mountPath: /downloads
           name: downloads
+        - mountPath: /config
+          name: transmission-config-file
         env:
           - name: PGID
             value: "1000"
           - name: PUID
             value: "1000"
-      initContainers:
-      - name: init-transmission
-        image: busybox
-        command: ["cp","/tmp/settings.json","/config/settings.json"]
-        volumeMounts:
-        - mountPath: /config
-          name: transmission-config
-        - mountPath: /tmp/settings.json
-          name: init-config
       volumes:
       - name: downloads
         persistentVolumeClaim:
@@ -74,10 +67,13 @@ spec:
       - name: transmission-config
         persistentVolumeClaim:
           claimName: transmission-config
-      - name: init-config
-        hostPath:
-          path: /src/rpi-kubernetes/files/transmission/settings.json
-          type: File
+      - name: transmission-config-files
+        configMap:
+          name: transmission-config
+      # - name: init-config
+      #   hostPath:
+      #     path: /src/rpi-kubernetes/files/transmission/settings.json
+      #     type: File
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
