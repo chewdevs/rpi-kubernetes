@@ -16,4 +16,5 @@
   service:
     name: keepalived
     state: started
+    enabled: yes
   tags: keepalived
