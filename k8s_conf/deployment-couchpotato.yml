@@ -50,6 +50,9 @@ spec:
         volumeMounts:
         - mountPath: /config
           name: couchpotato-config
+        - mountPath: /config/config.ini
+          name: couchpotato-config-files
+          subPath: config.ini
         - mountPath: /downloads
           name: downloads
         - mountPath: /movies
@@ -60,6 +63,9 @@ spec:
           - name: PUID
             value: "1000"
       volumes:
+      - name: couchpotato-config-files
+        configMap:
+          name: couchpotato-config
       - name: couchpotato-config
         persistentVolumeClaim:
           claimName: couchpotato-config
@@ -69,6 +75,35 @@ spec:
       - name: nfs-movies
         persistentVolumeClaim:
           claimName: nfs-movies
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: couchpotato-backup
+spec:
+  schedule: "0 1 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: couchpotato-backup
+            image: alpine
+            command: ["cp",  "-r", "/config/data/database", "/backup/rpi-k8s/couchpotato"]
+            volumeMounts:
+            - mountPath: /config
+              name: couchpotato-config
+              readOnly: true
+            - mountPath: /backup
+              name: nfs-backup
+          restartPolicy: Never
+          volumes:
+          - name: couchpotato-config
+            persistentVolumeClaim:
+              claimName: couchpotato-config
+          - name: nfs-backup
+            persistentVolumeClaim:
+              claimName: nfs-backup
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -82,19 +117,6 @@ spec:
   resources:
     requests:
       storage: 10Mi
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: nfs-movies
-spec:
-  capacity:
-    storage: 10Mi
-  accessModes:
-    - ReadWriteMany
-  nfs:
-    server: 192.168.1.20
-    path: "/volume1/Movies"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
